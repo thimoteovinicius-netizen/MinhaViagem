@@ -1,1 +1,3276 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
 
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Solicitação de Despesas de Viagem</title>
+
+    <!-- =====================================================
+         jsPDF
+    ====================================================== -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        :root {
+
+            --azul: #1976a8;
+
+            --azul-escuro: #125a80;
+
+            --azul-medio: #4fa8cf;
+
+            --azul-claro: #e8f5fb;
+
+            --azul-muito-claro: #f4fbfe;
+
+            --cinza: #66727a;
+
+            --cinza-claro: #f4f6f8;
+
+            --cinza-borda: #dce3e8;
+
+            --branco: #ffffff;
+
+            --texto: #263238;
+
+            --verde: #198754;
+
+            --vermelho: #dc3545;
+
+        }
+
+
+        body {
+
+            font-family:
+                "Segoe UI",
+                Arial,
+                sans-serif;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #dceff7 0%,
+                    #edf3f6 50%,
+                    #dfe6ea 100%
+                );
+
+            min-height: 100vh;
+
+            padding:
+                25px 15px;
+
+            color:
+                var(--texto);
+
+        }
+
+
+        .app {
+
+            width: 100%;
+
+            max-width: 950px;
+
+            margin: auto;
+
+        }
+
+
+        /* =====================================================
+           CABEÇALHO
+        ====================================================== */
+
+        .header {
+
+            background:
+                var(--branco);
+
+            border-radius:
+                18px;
+
+            padding:
+                25px 30px;
+
+            margin-bottom:
+                20px;
+
+            box-shadow:
+                0 10px 30px
+                rgba(
+                    40,
+                    70,
+                    90,
+                    0.12
+                );
+
+            border-top:
+                5px solid
+                var(--azul);
+
+        }
+
+
+        .titulo-editavel {
+
+            width: 100%;
+
+            border: none;
+
+            outline: none;
+
+            background: transparent;
+
+            color:
+                var(--azul);
+
+            font-size:
+                1.7rem;
+
+            font-weight:
+                700;
+
+        }
+
+
+        .header p {
+
+            color:
+                var(--cinza);
+
+            font-size:
+                0.9rem;
+
+            margin-top:
+                8px;
+
+        }
+
+
+        /* =====================================================
+           SOLICITAÇÃO
+        ====================================================== */
+
+        .solicitacao {
+
+            position: relative;
+
+            background:
+                var(--branco);
+
+            border-radius:
+                18px;
+
+            margin-bottom:
+                25px;
+
+            box-shadow:
+                0 8px 25px
+                rgba(
+                    40,
+                    70,
+                    90,
+                    0.10
+                );
+
+            overflow:
+                hidden;
+
+        }
+
+
+        .solicitacao-header {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #1976a8,
+                    #4fa8cf
+                );
+
+            color:
+                white;
+
+            padding:
+                16px 22px;
+
+            display:
+                flex;
+
+            justify-content:
+                space-between;
+
+            align-items:
+                center;
+
+        }
+
+
+        .solicitacao-header strong {
+
+            font-size:
+                1rem;
+
+        }
+
+
+        .btn-remover-solicitacao {
+
+            border: none;
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.18
+                );
+
+            color:
+                white;
+
+            padding:
+                7px 12px;
+
+            border-radius:
+                7px;
+
+            cursor:
+                pointer;
+
+            font-weight:
+                600;
+
+        }
+
+
+        .btn-remover-solicitacao:hover {
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.30
+                );
+
+        }
+
+
+        .solicitacao-body {
+
+            padding:
+                25px;
+
+        }
+
+
+        /* =====================================================
+           TÍTULOS DE SEÇÃO
+        ====================================================== */
+
+        .card-title {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                10px;
+
+            color:
+                var(--azul);
+
+            font-size:
+                1.05rem;
+
+            font-weight:
+                700;
+
+            margin-bottom:
+                20px;
+
+            padding-bottom:
+                12px;
+
+            border-bottom:
+                1px solid
+                var(--cinza-borda);
+
+        }
+
+
+        .card-number {
+
+            width:
+                28px;
+
+            height:
+                28px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            background:
+                var(--azul-claro);
+
+            color:
+                var(--azul);
+
+            border-radius:
+                50%;
+
+            font-size:
+                0.85rem;
+
+            font-weight:
+                bold;
+
+            flex-shrink:
+                0;
+
+        }
+
+
+        /* =====================================================
+           FORMULÁRIO
+        ====================================================== */
+
+        .form-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(
+                    2,
+                    1fr
+                );
+
+            gap:
+                18px;
+
+        }
+
+
+        .form-group {
+
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+        }
+
+
+        label {
+
+            font-size:
+                0.85rem;
+
+            font-weight:
+                600;
+
+            color:
+                #455a64;
+
+            margin-bottom:
+                7px;
+
+        }
+
+
+        input,
+        textarea {
+
+            width:
+                100%;
+
+            padding:
+                13px 14px;
+
+            border:
+                1px solid
+                var(--cinza-borda);
+
+            border-radius:
+                9px;
+
+            background:
+                #fbfcfd;
+
+            color:
+                var(--texto);
+
+            font-family:
+                inherit;
+
+            font-size:
+                0.95rem;
+
+            outline:
+                none;
+
+            transition:
+                0.2s;
+
+        }
+
+
+        input:focus,
+        textarea:focus {
+
+            border-color:
+                var(--azul-medio);
+
+            background:
+                white;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(
+                    79,
+                    168,
+                    207,
+                    0.12
+                );
+
+        }
+
+
+        textarea {
+
+            min-height:
+                100px;
+
+            resize:
+                vertical;
+
+        }
+
+
+        /* =====================================================
+           VEÍCULO
+        ====================================================== */
+
+        .vehicle-options {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap:
+                15px;
+
+        }
+
+
+        .vehicle-option {
+
+            position:
+                relative;
+
+        }
+
+
+        .vehicle-option input {
+
+            position:
+                absolute;
+
+            opacity:
+                0;
+
+            pointer-events:
+                none;
+
+        }
+
+
+        .vehicle-label {
+
+            display:
+                block;
+
+            padding:
+                16px;
+
+            border:
+                2px solid
+                var(--cinza-borda);
+
+            border-radius:
+                12px;
+
+            text-align:
+                center;
+
+            cursor:
+                pointer;
+
+            color:
+                var(--cinza);
+
+            font-weight:
+                600;
+
+            transition:
+                0.2s;
+
+        }
+
+
+        .vehicle-label:hover {
+
+            border-color:
+                var(--azul-medio);
+
+            background:
+                var(--azul-claro);
+
+        }
+
+
+        .vehicle-option input:checked
+        + .vehicle-label {
+
+            border-color:
+                var(--azul);
+
+            background:
+                var(--azul-claro);
+
+            color:
+                var(--azul);
+
+        }
+
+
+        /* =====================================================
+           ROTEIRO
+        ====================================================== */
+
+        .route-item {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                35px 1fr 42px;
+
+            gap:
+                10px;
+
+            align-items:
+                center;
+
+            margin-bottom:
+                12px;
+
+        }
+
+
+        .route-icon {
+
+            width:
+                30px;
+
+            height:
+                30px;
+
+            border-radius:
+                50%;
+
+            display:
+                flex;
+
+            justify-content:
+                center;
+
+            align-items:
+                center;
+
+            background:
+                var(--azul-claro);
+
+            color:
+                var(--azul);
+
+            font-weight:
+                bold;
+
+            font-size:
+                0.8rem;
+
+        }
+
+
+        .route-icon.start {
+
+            background:
+                #eef1f3;
+
+            color:
+                #54636b;
+
+        }
+
+
+        .route-icon.final {
+
+            background:
+                #e7f6ee;
+
+            color:
+                var(--verde);
+
+        }
+
+
+        .remove-stop {
+
+            width:
+                38px;
+
+            height:
+                38px;
+
+            border:
+                none;
+
+            border-radius:
+                8px;
+
+            background:
+                #fff0f1;
+
+            color:
+                var(--vermelho);
+
+            cursor:
+                pointer;
+
+            font-size:
+                1.1rem;
+
+        }
+
+
+        .remove-stop:hover {
+
+            background:
+                #ffd9dd;
+
+        }
+
+
+        .add-stop {
+
+            width:
+                100%;
+
+            padding:
+                11px;
+
+            margin-top:
+                5px;
+
+            border:
+                1px dashed
+                var(--azul-medio);
+
+            background:
+                var(--azul-claro);
+
+            color:
+                var(--azul);
+
+            border-radius:
+                9px;
+
+            cursor:
+                pointer;
+
+            font-weight:
+                600;
+
+        }
+
+
+        .add-stop:hover {
+
+            background:
+                #d8edf7;
+
+        }
+
+
+        /* =====================================================
+           BOTÃO NOVA SOLICITAÇÃO
+        ====================================================== */
+
+        .nova-solicitacao {
+
+            width:
+                100%;
+
+            border:
+                2px dashed
+                var(--azul-medio);
+
+            background:
+                var(--azul-muito-claro);
+
+            color:
+                var(--azul);
+
+            padding:
+                16px;
+
+            border-radius:
+                12px;
+
+            cursor:
+                pointer;
+
+            font-weight:
+                700;
+
+            font-size:
+                0.95rem;
+
+            margin-bottom:
+                20px;
+
+            transition:
+                0.2s;
+
+        }
+
+
+        .nova-solicitacao:hover {
+
+            background:
+                var(--azul-claro);
+
+            transform:
+                translateY(-1px);
+
+        }
+
+
+        /* =====================================================
+           AÇÕES
+        ====================================================== */
+
+        .actions {
+
+            background:
+                var(--branco);
+
+            padding:
+                20px;
+
+            border-radius:
+                18px;
+
+            box-shadow:
+                0 8px 25px
+                rgba(
+                    40,
+                    70,
+                    90,
+                    0.10
+                );
+
+            margin-bottom:
+                20px;
+
+        }
+
+
+        .btn-pdf {
+
+            width:
+                100%;
+
+            border:
+                none;
+
+            padding:
+                17px;
+
+            border-radius:
+                11px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #1976a8,
+                    #4fa8cf
+                );
+
+            color:
+                white;
+
+            font-size:
+                1rem;
+
+            font-weight:
+                700;
+
+            cursor:
+                pointer;
+
+            box-shadow:
+                0 7px 18px
+                rgba(
+                    25,
+                    118,
+                    168,
+                    0.25
+                );
+
+            transition:
+                0.2s;
+
+        }
+
+
+        .btn-pdf:hover {
+
+            transform:
+                translateY(-2px);
+
+        }
+
+
+        .footer {
+
+            text-align:
+                center;
+
+            color:
+                #73818a;
+
+            font-size:
+                0.75rem;
+
+            padding:
+                5px;
+
+        }
+
+
+        /* =====================================================
+           RESPONSIVO
+        ====================================================== */
+
+        @media (
+            max-width: 650px
+        ) {
+
+            body {
+
+                padding:
+                    12px 8px;
+
+            }
+
+
+            .header {
+
+                padding:
+                    20px;
+
+                border-radius:
+                    14px;
+
+            }
+
+
+            .form-grid {
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+
+            .vehicle-options {
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+
+            .route-item {
+
+                grid-template-columns:
+                    32px 1fr 38px;
+
+                gap:
+                    7px;
+
+            }
+
+
+            .titulo-editavel {
+
+                font-size:
+                    1.35rem;
+
+            }
+
+
+            .solicitacao-body {
+
+                padding:
+                    18px;
+
+            }
+
+
+            .solicitacao-header {
+
+                padding:
+                    14px 16px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="app">
+
+
+    <!-- =====================================================
+         CABEÇALHO
+    ====================================================== -->
+
+    <div class="header">
+
+        <input
+            type="text"
+            id="titulo"
+            class="titulo-editavel"
+            value="SOLICITAÇÃO DE DESPESAS DE VIAGEM"
+        >
+
+        <p>
+            Preencha uma ou mais solicitações e gere todas
+            em um único documento PDF.
+        </p>
+
+    </div>
+
+
+    <!-- =====================================================
+         SOLICITAÇÕES
+    ====================================================== -->
+
+    <div id="solicitacoes"></div>
+
+
+    <!-- =====================================================
+         NOVA SOLICITAÇÃO
+    ====================================================== -->
+
+    <button
+        type="button"
+        class="nova-solicitacao"
+        onclick="adicionarSolicitacao()"
+    >
+
+        ＋ ADICIONAR NOVA SOLICITAÇÃO
+
+    </button>
+
+
+    <!-- =====================================================
+         GERAR PDF
+    ====================================================== -->
+
+    <div class="actions">
+
+        <button
+            type="button"
+            class="btn-pdf"
+            onclick="gerarPDF()"
+        >
+
+            📄 GERAR TODAS AS SOLICITAÇÕES EM PDF
+
+        </button>
+
+    </div>
+
+
+    <div class="footer">
+
+        Gerador de Solicitação de Despesas de Viagem
+
+    </div>
+
+
+</div>
+
+
+
+<script>
+
+
+/* =========================================================
+   CONTROLE
+========================================================= */
+
+let contadorSolicitacoes = 0;
+
+
+/* =========================================================
+   ADICIONAR SOLICITAÇÃO
+========================================================= */
+
+function adicionarSolicitacao() {
+
+    contadorSolicitacoes++;
+
+    const numero =
+        contadorSolicitacoes;
+
+
+    const container =
+        document.getElementById(
+            "solicitacoes"
+        );
+
+
+    const solicitacao =
+        document.createElement(
+            "div"
+        );
+
+
+    solicitacao.className =
+        "solicitacao";
+
+
+    solicitacao.innerHTML = `
+
+        <div class="solicitacao-header">
+
+            <strong>
+                Solicitação ${numero}
+            </strong>
+
+            <button
+                type="button"
+                class="btn-remover-solicitacao"
+                onclick="removerSolicitacao(this)"
+            >
+
+                Remover
+
+            </button>
+
+        </div>
+
+
+        <div class="solicitacao-body">
+
+
+            <!-- TÉCNICOS -->
+
+            <div class="card-title">
+
+                <span class="card-number">
+                    1
+                </span>
+
+                Técnicos responsáveis pela viagem
+
+            </div>
+
+
+            <div class="form-grid">
+
+
+                <div class="form-group">
+
+                    <label>
+                        Técnico responsável
+                    </label>
+
+                    <input
+                        type="text"
+                        class="tecnico-responsavel"
+                        placeholder="Nome do técnico responsável"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+
+                        Técnico acompanhante
+
+                        <span
+                            style="
+                                color:#8a969d;
+                                font-weight:normal;
+                            "
+                        >
+                            (opcional)
+                        </span>
+
+                    </label>
+
+                    <input
+                        type="text"
+                        class="tecnico-acompanhante"
+                        placeholder="Nome do técnico acompanhante"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- VEÍCULO -->
+
+            <div
+                class="card-title"
+                style="margin-top:30px;"
+            >
+
+                <span class="card-number">
+                    2
+                </span>
+
+                Veículo utilizado
+
+            </div>
+
+
+            <div class="vehicle-options">
+
+
+                <div class="vehicle-option">
+
+                    <input
+                        type="radio"
+                        name="veiculo-${numero}"
+                        value="Veículo próprio"
+                    >
+
+                    <label class="vehicle-label">
+
+                        🚗 Veículo próprio
+
+                    </label>
+
+                </div>
+
+
+                <div class="vehicle-option">
+
+                    <input
+                        type="radio"
+                        name="veiculo-${numero}"
+                        value="Veículo da empresa"
+                        checked
+                    >
+
+                    <label class="vehicle-label">
+
+                        🚙 Veículo da empresa
+
+                    </label>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- ROTEIRO -->
+
+            <div
+                class="card-title"
+                style="margin-top:30px;"
+            >
+
+                <span class="card-number">
+                    3
+                </span>
+
+                Roteiro da viagem
+
+            </div>
+
+
+            <div class="roteiro">
+
+
+                <div class="route-item">
+
+                    <div class="route-icon start">
+                        A
+                    </div>
+
+                    <input
+                        type="text"
+                        class="partida"
+                        placeholder="Local de partida"
+                    >
+
+                    <div></div>
+
+                </div>
+
+
+                <div class="paradas"></div>
+
+
+                <div class="route-item">
+
+                    <div class="route-icon final">
+                        F
+                    </div>
+
+                    <input
+                        type="text"
+                        class="destino"
+                        placeholder="Destino final"
+                    >
+
+                    <div></div>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="add-stop"
+                    onclick="adicionarParada(this)"
+                >
+
+                    + Adicionar ponto de parada
+
+                </button>
+
+
+            </div>
+
+
+            <!-- INFORMAÇÕES -->
+
+            <div
+                class="card-title"
+                style="margin-top:30px;"
+            >
+
+                <span class="card-number">
+                    4
+                </span>
+
+                Informações da viagem
+
+            </div>
+
+
+            <div class="form-grid">
+
+
+                <div class="form-group">
+
+                    <label>
+                        Previsão de KM
+                    </label>
+
+                    <input
+                        type="number"
+                        class="km"
+                        min="0"
+                        step="1"
+                        placeholder="Ex.: 580"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Previsão de pedágios (R$)
+                    </label>
+
+                    <input
+                        type="number"
+                        class="pedagio"
+                        min="0"
+                        step="0.01"
+                        placeholder="Ex.: 72,40"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Data da ida
+                    </label>
+
+                    <input
+                        type="date"
+                        class="data-ida"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Data da volta
+                    </label>
+
+                    <input
+                        type="date"
+                        class="data-volta"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Quantidade de diárias
+                    </label>
+
+                    <input
+                        type="number"
+                        class="diarias"
+                        min="0"
+                        step="1"
+                        placeholder="Ex.: 2"
+                    >
+
+                </div>
+
+
+            </div>
+
+
+            <!-- OBSERVAÇÕES -->
+
+            <div
+                class="card-title"
+                style="margin-top:30px;"
+            >
+
+                <span class="card-number">
+                    5
+                </span>
+
+                Observações
+
+            </div>
+
+
+            <div class="form-group">
+
+                <textarea
+                    class="observacoes"
+                    placeholder="Informações adicionais sobre esta viagem..."
+                ></textarea>
+
+            </div>
+
+
+        </div>
+
+    `;
+
+
+    container.appendChild(
+        solicitacao
+    );
+
+
+    atualizarNumeracaoSolicitacoes();
+
+}
+
+
+/* =========================================================
+   REMOVER SOLICITAÇÃO
+========================================================= */
+
+function removerSolicitacao(botao) {
+
+    const solicitacao =
+        botao.closest(
+            ".solicitacao"
+        );
+
+
+    if (!solicitacao) {
+        return;
+    }
+
+
+    const todas =
+        document.querySelectorAll(
+            ".solicitacao"
+        );
+
+
+    if (todas.length <= 1) {
+
+        alert(
+            "É necessário manter pelo menos uma solicitação."
+        );
+
+        return;
+
+    }
+
+
+    solicitacao.remove();
+
+
+    atualizarNumeracaoSolicitacoes();
+
+}
+
+
+/* =========================================================
+   NUMERAR SOLICITAÇÕES
+========================================================= */
+
+function atualizarNumeracaoSolicitacoes() {
+
+    const lista =
+        document.querySelectorAll(
+            ".solicitacao"
+        );
+
+
+    lista.forEach(
+        (solicitacao, index) => {
+
+            const numero =
+                index + 1;
+
+
+            solicitacao.dataset.numero =
+                numero;
+
+
+            const titulo =
+                solicitacao.querySelector(
+                    ".solicitacao-header strong"
+                );
+
+
+            if (titulo) {
+
+                titulo.textContent =
+                    `Solicitação ${numero}`;
+
+            }
+
+
+            const radios =
+                solicitacao.querySelectorAll(
+                    'input[type="radio"]'
+                );
+
+
+            radios.forEach(
+                radio => {
+
+                    radio.name =
+                        `veiculo-${numero}`;
+
+                }
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   ADICIONAR PARADA
+========================================================= */
+
+function adicionarParada(botao) {
+
+    const roteiro =
+        botao.closest(
+            ".roteiro"
+        );
+
+
+    const container =
+        roteiro.querySelector(
+            ".paradas"
+        );
+
+
+    const quantidade =
+        container.querySelectorAll(
+            ".route-item"
+        ).length;
+
+
+    const numero =
+        quantidade + 1;
+
+
+    const item =
+        document.createElement(
+            "div"
+        );
+
+
+    item.className =
+        "route-item";
+
+
+    item.innerHTML = `
+
+        <div class="route-icon">
+
+            ${numero}
+
+        </div>
+
+
+        <input
+            type="text"
+            class="parada-input"
+            placeholder="Ponto de parada ${numero}"
+        >
+
+
+        <button
+            type="button"
+            class="remove-stop"
+            onclick="removerParada(this)"
+        >
+
+            ×
+
+        </button>
+
+    `;
+
+
+    container.appendChild(
+        item
+    );
+
+
+    atualizarParadas(
+        roteiro
+    );
+
+}
+
+
+/* =========================================================
+   REMOVER PARADA
+========================================================= */
+
+function removerParada(botao) {
+
+    const item =
+        botao.closest(
+            ".route-item"
+        );
+
+
+    const roteiro =
+        botao.closest(
+            ".roteiro"
+        );
+
+
+    if (item) {
+
+        item.remove();
+
+    }
+
+
+    atualizarParadas(
+        roteiro
+    );
+
+}
+
+
+/* =========================================================
+   ATUALIZAR NUMERAÇÃO DAS PARADAS
+========================================================= */
+
+function atualizarParadas(
+    roteiro
+) {
+
+    if (!roteiro) {
+        return;
+    }
+
+
+    const paradas =
+        roteiro.querySelectorAll(
+            ".paradas .route-item"
+        );
+
+
+    paradas.forEach(
+        (item, index) => {
+
+            const numero =
+                index + 1;
+
+
+            const icone =
+                item.querySelector(
+                    ".route-icon"
+                );
+
+
+            const input =
+                item.querySelector(
+                    ".parada-input"
+                );
+
+
+            if (icone) {
+
+                icone.textContent =
+                    numero;
+
+            }
+
+
+            if (input) {
+
+                input.placeholder =
+                    `Ponto de parada ${numero}`;
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   FORMATAR DATA
+========================================================= */
+
+function formatarData(data) {
+
+    if (!data) {
+
+        return "";
+
+    }
+
+
+    const partes =
+        data.split("-");
+
+
+    if (
+        partes.length !== 3
+    ) {
+
+        return data;
+
+    }
+
+
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+
+}
+
+
+/* =========================================================
+   FORMATAR MOEDA
+========================================================= */
+
+function formatarMoeda(valor) {
+
+    if (
+        valor === null ||
+        valor === undefined ||
+        valor === ""
+    ) {
+
+        return "R$ 0,00";
+
+    }
+
+
+    const numero =
+        parseFloat(valor);
+
+
+    if (
+        Number.isNaN(numero)
+    ) {
+
+        return "R$ 0,00";
+
+    }
+
+
+    return numero.toLocaleString(
+        "pt-BR",
+        {
+            style:
+                "currency",
+
+            currency:
+                "BRL"
+        }
+    );
+
+}
+
+
+/* =========================================================
+   COLETAR DADOS
+========================================================= */
+
+function coletarSolicitacoes() {
+
+    const elementos =
+        document.querySelectorAll(
+            ".solicitacao"
+        );
+
+
+    const dados = [];
+
+
+    elementos.forEach(
+        elemento => {
+
+
+            const responsavel =
+                elemento.querySelector(
+                    ".tecnico-responsavel"
+                ).value.trim();
+
+
+            const acompanhante =
+                elemento.querySelector(
+                    ".tecnico-acompanhante"
+                ).value.trim();
+
+
+            const radio =
+                elemento.querySelector(
+                    'input[type="radio"]:checked'
+                );
+
+
+            const veiculo =
+                radio
+                    ? radio.value
+                    : "";
+
+
+            const partida =
+                elemento.querySelector(
+                    ".partida"
+                ).value.trim();
+
+
+            const destino =
+                elemento.querySelector(
+                    ".destino"
+                ).value.trim();
+
+
+            const paradas = [];
+
+
+            elemento
+                .querySelectorAll(
+                    ".parada-input"
+                )
+                .forEach(
+                    input => {
+
+                        const valor =
+                            input.value.trim();
+
+
+                        if (valor) {
+
+                            paradas.push(
+                                valor
+                            );
+
+                        }
+
+                    }
+                );
+
+
+            const km =
+                elemento.querySelector(
+                    ".km"
+                ).value;
+
+
+            const pedagio =
+                elemento.querySelector(
+                    ".pedagio"
+                ).value;
+
+
+            const dataIda =
+                elemento.querySelector(
+                    ".data-ida"
+                ).value;
+
+
+            const dataVolta =
+                elemento.querySelector(
+                    ".data-volta"
+                ).value;
+
+
+            const diarias =
+                elemento.querySelector(
+                    ".diarias"
+                ).value;
+
+
+            const observacoes =
+                elemento.querySelector(
+                    ".observacoes"
+                ).value.trim();
+
+
+            dados.push({
+
+                responsavel,
+
+                acompanhante,
+
+                veiculo,
+
+                partida,
+
+                paradas,
+
+                destino,
+
+                km,
+
+                pedagio,
+
+                dataIda,
+
+                dataVolta,
+
+                diarias,
+
+                observacoes
+
+            });
+
+        }
+    );
+
+
+    return dados;
+
+}
+
+
+/* =========================================================
+   DESENHAR SEÇÃO NO PDF
+========================================================= */
+
+function cabecalhoSecao(
+    doc,
+    texto,
+    y
+) {
+
+    doc.setFillColor(
+        232,
+        245,
+        251
+    );
+
+
+    doc.roundedRect(
+        15,
+        y,
+        180,
+        9,
+        2,
+        2,
+        "F"
+    );
+
+
+    doc.setTextColor(
+        25,
+        118,
+        168
+    );
+
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+
+    doc.setFontSize(
+        10
+    );
+
+
+    doc.text(
+        texto,
+        20,
+        y + 6
+    );
+
+}
+
+
+/* =========================================================
+   VERIFICAR ESPAÇO NO PDF
+========================================================= */
+
+function verificarEspaco(
+    doc,
+    y,
+    necessario
+) {
+
+    const altura =
+        doc.internal.pageSize.getHeight();
+
+
+    if (
+        y + necessario >
+        altura - 18
+    ) {
+
+        doc.addPage();
+
+        return 20;
+
+    }
+
+
+    return y;
+
+}
+
+
+/* =========================================================
+   GERAR PÁGINA / SOLICITAÇÃO
+========================================================= */
+
+function gerarPaginaSolicitacao(
+    doc,
+    dados,
+    numero,
+    titulo
+) {
+
+    const largura =
+        doc.internal.pageSize.getWidth();
+
+
+    const altura =
+        doc.internal.pageSize.getHeight();
+
+
+    const azul =
+        [25, 118, 168];
+
+
+    const cinza =
+        [100, 114, 122];
+
+
+    const preto =
+        [38, 50, 56];
+
+
+    /* =====================================================
+       FUNDO
+    ====================================================== */
+
+    doc.setFillColor(
+        248,
+        250,
+        251
+    );
+
+
+    doc.rect(
+        0,
+        0,
+        largura,
+        altura,
+        "F"
+    );
+
+
+    /* =====================================================
+       FAIXA SUPERIOR
+    ====================================================== */
+
+    doc.setFillColor(
+        ...azul
+    );
+
+
+    doc.rect(
+        0,
+        0,
+        largura,
+        7,
+        "F"
+    );
+
+
+    /* =====================================================
+       CABEÇALHO
+    ====================================================== */
+
+    doc.setFillColor(
+        255,
+        255,
+        255
+    );
+
+
+    doc.roundedRect(
+        15,
+        14,
+        180,
+        31,
+        4,
+        4,
+        "F"
+    );
+
+
+    doc.setTextColor(
+        ...azul
+    );
+
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+
+    doc.setFontSize(
+        14
+    );
+
+
+    const tituloLinhas =
+        doc.splitTextToSize(
+            titulo.toUpperCase(),
+            170
+        );
+
+
+    doc.text(
+        tituloLinhas,
+        20,
+        25
+    );
+
+
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
+
+
+    doc.setFontSize(
+        8
+    );
+
+
+    doc.setTextColor(
+        ...cinza
+    );
+
+
+    doc.text(
+        `Solicitação de viagem ${numero}`,
+        20,
+        39
+    );
+
+
+    let y =
+        53;
+
+
+    /* =====================================================
+       TÉCNICOS
+    ====================================================== */
+
+    cabecalhoSecao(
+        doc,
+        "TÉCNICOS DA VIAGEM",
+        y
+    );
+
+
+    y += 16;
+
+
+    doc.setTextColor(
+        ...cinza
+    );
+
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+
+    doc.setFontSize(
+        8
+    );
+
+
+    doc.text(
+        "TÉCNICO RESPONSÁVEL",
+        20,
+        y
+    );
+
+
+    doc.text(
+        "TÉCNICO ACOMPANHANTE",
+        110,
+        y
+    );
+
+
+    doc.setTextColor(
+        ...preto
+    );
+
+
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
+
+
+    doc.setFontSize(
+        10
+    );
+
+
+    doc.text(
+        dados.responsavel ||
+        "Não informado",
+        20,
+        y + 7,
+        {
+            maxWidth:
+                80
+        }
+    );
+
+
+    doc.text(
+        dados.acompanhante ||
+        "Não informado",
+        110,
+        y + 7,
+        {
+            maxWidth:
+                80
+        }
+    );
+
+
+    /* =====================================================
+       VEÍCULO
+    ====================================================== */
+
+    y += 24;
+
+
+    cabecalhoSecao(
+        doc,
+        "VEÍCULO UTILIZADO",
+        y
+    );
+
+
+    y += 16;
+
+
+    doc.setTextColor(
+        ...preto
+    );
+
+
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
+
+
+    doc.setFontSize(
+        10
+    );
+
+
+    doc.text(
+        dados.veiculo ||
+        "Não informado",
+        20,
+        y
+    );
+
+
+    /* =====================================================
+       ROTEIRO
+    ====================================================== */
+
+    y += 16;
+
+
+    cabecalhoSecao(
+        doc,
+        "ROTEIRO DA VIAGEM",
+        y
+    );
+
+
+    y += 15;
+
+
+    /* PARTIDA */
+
+    doc.setFillColor(
+        238,
+        241,
+        243
+    );
+
+
+    doc.circle(
+        23,
+        y - 1,
+        4,
+        "F"
+    );
+
+
+    doc.setTextColor(
+        84,
+        99,
+        107
+    );
+
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+
+    doc.setFontSize(
+        7
+    );
+
+
+    doc.text(
+        "A",
+        21.5,
+        y + 1.5
+    );
+
+
+    doc.setTextColor(
+        ...preto
+    );
+
+
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
+
+
+    doc.setFontSize(
+        9
+    );
+
+
+    const partidaLinhas =
+        doc.splitTextToSize(
+            dados.partida ||
+            "Não informado",
+            155
+        );
+
+
+    doc.text(
+        partidaLinhas,
+        32,
+        y + 1
+    );
+
+
+    y +=
+        11 +
+        (
+            Math.max(
+                0,
+                partidaLinhas.length - 1
+            ) * 4
+        );
+
+
+    /* PARADAS */
+
+    dados.paradas.forEach(
+        (parada, index) => {
+
+
+            y =
+                verificarEspaco(
+                    doc,
+                    y,
+                    15
+                );
+
+
+            doc.setFillColor(
+                232,
+                245,
+                251
+            );
+
+
+            doc.circle(
+                23,
+                y - 1,
+                4,
+                "F"
+            );
+
+
+            doc.setTextColor(
+                ...azul
+            );
+
+
+            doc.setFont(
+                "helvetica",
+                "bold"
+            );
+
+
+            doc.setFontSize(
+                7
+            );
+
+
+            doc.text(
+                String(index + 1),
+                21.2,
+                y + 1.5
+            );
+
+
+            doc.setTextColor(
+                ...preto
+            );
+
+
+            doc.setFont(
+                "helvetica",
+                "normal"
+            );
+
+
+            doc.setFontSize(
+                9
+            );
+
+
+            const linhas =
+                doc.splitTextToSize(
+                    parada,
+                    155
+                );
+
+
+            doc.text(
+                linhas,
+                32,
+                y + 1
+            );
+
+
+            y +=
+                11 +
+                (
+                    Math.max(
+                        0,
+                        linhas.length - 1
+                    ) * 4
+                );
+
+        }
+    );
+
+
+    /* DESTINO */
+
+    y =
+        verificarEspaco(
+            doc,
+            y,
+            15
+        );
+
+
+    doc.setFillColor(
+        231,
+        246,
+        238
+    );
+
+
+    doc.circle(
+        23,
+        y - 1,
+        4,
+        "F"
+    );
+
+
+    doc.setTextColor(
+        25,
+        135,
+        84
+    );
+
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+
+    doc.setFontSize(
+        7
+    );
+
+
+    doc.text(
+        "F",
+        21.5,
+        y + 1.5
+    );
+
+
+    doc.setTextColor(
+        ...preto
+    );
+
+
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
+
+
+    doc.setFontSize(
+        9
+    );
+
+
+    const destinoLinhas =
+        doc.splitTextToSize(
+            dados.destino ||
+            "Não informado",
+            155
+        );
+
+
+    doc.text(
+        destinoLinhas,
+        32,
+        y + 1
+    );
+
+
+    y +=
+        15 +
+        (
+            Math.max(
+                0,
+                destinoLinhas.length - 1
+            ) * 4
+        );
+
+
+    /* =====================================================
+       INFORMAÇÕES
+    ====================================================== */
+
+    y =
+        verificarEspaco(
+            doc,
+            y,
+            55
+        );
+
+
+    cabecalhoSecao(
+        doc,
+        "INFORMAÇÕES DA VIAGEM",
+        y
+    );
+
+
+    y += 16;
+
+
+    /* KM */
+
+    doc.setTextColor(
+        ...cinza
+    );
+
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+
+    doc.setFontSize(
+        8
+    );
+
+
+    doc.text(
+        "PREVISÃO DE KM",
+        20,
+        y
+    );
+
+
+    doc.setTextColor(
+        ...preto
+    );
+
+
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
+
+
+    doc.setFontSize(
+        10
+    );
+
+
+    doc.text(
+        dados.km
+            ? `${dados.km} km`
+            : "Não informado",
+        20,
+        y + 7
+    );
+
+
+    /* PEDÁGIO */
+
+    doc.setTextColor(
+        ...cinza
+    );
+
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+
+    doc.setFontSize(
+        8
+    );
+
+
+    doc.text(
+        "PEDÁGIOS PREVISTOS",
+        75,
+        y
+    );
+
+
+    doc.setTextColor(
+        ...preto
+    );
+
+
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
+
+
+    doc.setFontSize(
+        10
+    );
+
+
+    doc.text(
+        dados.pedagio
+            ? formatarMoeda(
+                dados.pedagio
+            )
+            : "Não informado",
+        75,
+        y + 7
+    );
+
+
+    /* DIÁRIAS */
+
+    doc.setTextColor(
+        ...cinza
+    );
+
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+
+    doc.setFontSize(
+        8
+    );
+
+
+    doc.text(
+        "DIÁRIAS",
+        135,
+        y
+    );
+
+
+    doc.setTextColor(
+        ...preto
+    );
+
+
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
+
+
+    doc.setFontSize(
+        10
+    );
+
+
+    doc.text(
+        dados.diarias ||
+        "Não informado",
+        135,
+        y + 7
+    );
+
+
+    y += 24;
+
+
+    /* DATAS */
+
+    doc.setTextColor(
+        ...cinza
+    );
+
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+
+    doc.setFontSize(
+        8
+    );
+
+
+    doc.text(
+        "DATA DA IDA",
+        20,
+        y
+    );
+
+
+    doc.text(
+        "DATA DA VOLTA",
+        110,
+        y
+    );
+
+
+    doc.setTextColor(
+        ...preto
+    );
+
+
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
+
+
+    doc.setFontSize(
+        10
+    );
+
+
+    doc.text(
+        dados.dataIda
+            ? formatarData(
+                dados.dataIda
+            )
+            : "Não informado",
+        20,
+        y + 7
+    );
+
+
+    doc.text(
+        dados.dataVolta
+            ? formatarData(
+                dados.dataVolta
+            )
+            : "Não informado",
+        110,
+        y + 7
+    );
+
+
+    y += 23;
+
+
+    /* =====================================================
+       OBSERVAÇÕES
+    ====================================================== */
+
+    y =
+        verificarEspaco(
+            doc,
+            y,
+            55
+        );
+
+
+    cabecalhoSecao(
+        doc,
+        "OBSERVAÇÕES",
+        y
+    );
+
+
+    y += 14;
+
+
+    const observacao =
+        dados.observacoes ||
+        "Nenhuma observação informada.";
+
+
+    const linhasObs =
+        doc.splitTextToSize(
+            observacao,
+            168
+        );
+
+
+    const alturaObs =
+        Math.max(
+            29,
+            10 +
+            (
+                linhasObs.length *
+                4
+            )
+        );
+
+
+    y =
+        verificarEspaco(
+            doc,
+            y,
+            alturaObs + 15
+        );
+
+
+    doc.setFillColor(
+        244,
+        246,
+        248
+    );
+
+
+    doc.roundedRect(
+        15,
+        y,
+        180,
+        alturaObs,
+        3,
+        3,
+        "F"
+    );
+
+
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
+
+
+    doc.setFontSize(
+        8
+    );
+
+
+    doc.setTextColor(
+        ...preto
+    );
+
+
+    doc.text(
+        linhasObs,
+        20,
+        y + 8
+    );
+
+
+    y +=
+        alturaObs +
+        18;
+
+
+    /* =====================================================
+       ASSINATURAS
+    ====================================================== */
+
+    y =
+        verificarEspaco(
+            doc,
+            y,
+            30
+        );
+
+
+    doc.setDrawColor(
+        170,
+        180,
+        185
+    );
+
+
+    doc.line(
+        20,
+        y,
+        90,
+        y
+    );
+
+
+    doc.line(
+        110,
+        y,
+        190,
+        y
+    );
+
+
+    doc.setTextColor(
+        ...cinza
+    );
+
+
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
+
+
+    doc.setFontSize(
+        8
+    );
+
+
+    doc.text(
+        "Solicitante",
+        53,
+        y + 5,
+        {
+            align:
+                "center"
+        }
+    );
+
+
+    doc.text(
+        "Aprovação",
+        150,
+        y + 5,
+        {
+            align:
+                "center"
+        }
+    );
+
+
+    /* =====================================================
+       RODAPÉ
+    ====================================================== */
+
+    doc.setFillColor(
+        ...azul
+    );
+
+
+    doc.rect(
+        0,
+        altura - 9,
+        largura,
+        9,
+        "F"
+    );
+
+
+    doc.setTextColor(
+        255,
+        255,
+        255
+    );
+
+
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
+
+
+    doc.setFontSize(
+        7
+    );
+
+
+    doc.text(
+        `Solicitação ${numero}`,
+        15,
+        altura - 3.5
+    );
+
+
+    const hoje =
+        new Date();
+
+
+    doc.text(
+        `Emissão: ${hoje.toLocaleDateString("pt-BR")}`,
+        195,
+        altura - 3.5,
+        {
+            align:
+                "right"
+        }
+    );
+
+}
+
+
+/* =========================================================
+   GERAR PDF
+========================================================= */
+
+function gerarPDF() {
+
+    const dados =
+        coletarSolicitacoes();
+
+
+    if (
+        dados.length === 0
+    ) {
+
+        alert(
+            "Adicione pelo menos uma solicitação."
+        );
+
+        return;
+
+    }
+
+
+    /* =====================================================
+       VALIDAÇÃO
+    ====================================================== */
+
+    for (
+        let i = 0;
+        i < dados.length;
+        i++
+    ) {
+
+        const item =
+            dados[i];
+
+
+        if (
+            !item.responsavel
+        ) {
+
+            alert(
+                `Informe o técnico responsável da Solicitação ${i + 1}.`
+            );
+
+            return;
+
+        }
+
+
+        if (
+            !item.partida
+        ) {
+
+            alert(
+                `Informe o local de partida da Solicitação ${i + 1}.`
+            );
+
+            return;
+
+        }
+
+
+        if (
+            !item.destino
+        ) {
+
+            alert(
+                `Informe o destino final da Solicitação ${i + 1}.`
+            );
+
+            return;
+
+        }
+
+    }
+
+
+    /* =====================================================
+       JS PDF
+    ====================================================== */
+
+    if (
+        !window.jspdf ||
+        !window.jspdf.jsPDF
+    ) {
+
+        alert(
+            "Não foi possível carregar o gerador de PDF. Verifique sua conexão com a internet."
+        );
+
+        return;
+
+    }
+
+
+    const {
+        jsPDF
+    } = window.jspdf;
+
+
+    const doc =
+        new jsPDF({
+
+            orientation:
+                "portrait",
+
+            unit:
+                "mm",
+
+            format:
+                "a4"
+
+        });
+
+
+    const titulo =
+        document
+            .getElementById(
+                "titulo"
+            )
+            .value.trim() ||
+        "SOLICITAÇÃO DE DESPESAS DE VIAGEM";
+
+
+    /* =====================================================
+       GERAR SOLICITAÇÕES
+    ====================================================== */
+
+    dados.forEach(
+        (item, index) => {
+
+            if (
+                index > 0
+            ) {
+
+                doc.addPage();
+
+            }
+
+
+            gerarPaginaSolicitacao(
+                doc,
+                item,
+                index + 1,
+                titulo
+            );
+
+        }
+    );
+
+
+    /* =====================================================
+       NOME DO ARQUIVO
+    ====================================================== */
+
+    let nomeBase =
+        dados[0]
+            .responsavel
+            .replace(
+                /[^a-zA-Z0-9À-ÿ]/g,
+                "_"
+            );
+
+
+    if (
+        !nomeBase
+    ) {
+
+        nomeBase =
+            "Viagem";
+
+    }
+
+
+    const nomeArquivo =
+        `Solicitacao_Viagem_${nomeBase}.pdf`;
+
+
+    doc.save(
+        nomeArquivo
+    );
+
+}
+
+
+/* =========================================================
+   INICIAR APLICATIVO
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        adicionarSolicitacao();
+
+    }
+);
+
+
+</script>
+
+
+</body>
+
+</html>
